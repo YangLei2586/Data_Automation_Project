@@ -1,7 +1,9 @@
+# This file is developed to set up the API interface for data collection
 from abc import ABC, abstractmethod
 import requests
 import concurrent.futures
 import threading
+# helper still waited to be developed
 from helpers import get_graph_ql_web_link
 
 
@@ -227,5 +229,5 @@ class APIEndPint(ABC):
                     raise res.exception()
         return appian_data._APPIAN_DATA
 
-    
+
 
