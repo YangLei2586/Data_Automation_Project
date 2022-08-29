@@ -49,25 +49,26 @@ def get_local_environment_type() -> str:
     else:
         return 'local'
 
+
 def list_to_string(
         input_list: list,
         data_separator: str
         ) -> str:
     """
-    turns list of numbers into string format if input_list is a string we transform it by
-    splitting it at each comma using split function; used predominantly to paste a portion of multiple
-    agent IDs into a graph template
-    :param input_list: list of int IDs or a string that can be split at each comma
-    """
+        turns list of numbers into string format if input_list is a string we transform it by
+        splitting it at each comma using split function; used predominantly to paste a portion of multiple
+        agent IDs into a graph template
+        :param input_list: list of int IDs or a string that can be split at each comma
+        """
+    if isinstance(input_list,str):
+        data_list = input_list.split(',')
+    else:
+        data_list = input_list
+    if len(data_list) == 1:
+        return f'{data_list[0]}'
+    else:
+        return data_separator.join(str(__) for __ in data_list)
 
-     if isinstance(input_list,str):
-         data_list = input_list.split(',')
-     else:
-         data_list = input_list
-     if len(data_list) == 1:
-         return f'{data_list[0]}'
-     else:
-         return data_separator.join(str(__) for __ in data_list)
 
 def helios_output_data(input_list: list):
     """
