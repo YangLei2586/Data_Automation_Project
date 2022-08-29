@@ -3,8 +3,8 @@ import sys
 from collections import OrderedDict
 
 from appian_graphql.FDR_handle import FDRHandle
-from helpers import extract_and_cleans_fdr_input_from_cmd_line
-from helpers import helios_output_data
+from sql.helpers import extract_and_cleans_fdr_input_from_cmd_line
+from sql.helpers import helios_output_data
 from config.appian_fdr_config import AppianFDRConfig
 
 
@@ -260,7 +260,6 @@ def data_download_print(
                 res_list.append(res_dict)
     return res_list
 
-__name__ == '__main__':
 
 try:
     input_header_dict = json.loads(sys.argv[2])
