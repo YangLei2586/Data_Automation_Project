@@ -25,6 +25,7 @@ _HELIOS_NICKNAME_KEY ='dwbi-nickname_list'
 _HELIOS_FDR_KEY = 'dwbi-fdr_id_list'
 _HELIOS_STATEMENT_MASTER_ID = 'dwbi-statement_id_list'
 _HELIOS_USERNAME_KEY = 'dwbi-username'
+_HELIOS_START_DATE_KEY = 'dwbi-start_date_str'
 _HELIOS_END_DATE_KEY = 'dwbi-end_date_str'
 _HELIOS_STATEMENT_TYPE_KEY = 'dwbi-statement_type'
 _HELIOS_NICKNAME_TEMPLATE_SECTOR_TUPLE_KEY = 'dwbi-nickname_template_sector_tuples'
@@ -187,3 +188,68 @@ def get_navigator_api_web_link():
         return _Q_ENV
     else:
         return _P_ENV
+
+
+def extract_and_cleans_fdr_input_from_cmd_line(cmd_line_dict:dict) -> str:
+    """
+    convert str into actual ids, split allows for error detection, check for empty string
+    :param cmd_line_dict:
+    :return:
+    """
+    input_nickname_template_tuples = [
+        __.replace('\n','').replace('','')
+        for __ in
+        cmd_line_dict[_HELIOS_NICKNAME_TEMPLATE_SECTOR_TUPLE_KEY].split(
+            _HELIOS_TUPLE_SEPARATOR
+        )
+        if __ != ''
+
+    ]
+
+    if _HELIOS_USERNAME_KEY not in cmd_line_dict:
+        input_username = None
+    else:
+        input_username = cmd_line_dict[_HELIOS_USERNAME_KEY]
+
+    optional_params = {}
+    for param in (
+        _HELIOS_START_DATE_KEY,
+        _HELIOS_END_DATE_KEY,
+        _HELIOS_STATEMENT_TYPE_KEY
+    ):
+        if param in cmd_line_dict:
+            optional_params[param] = cmd_line_dict[param]
+    return get_fdr_init_class_dict(
+        input_nickname_template_tuples,
+        input_username,
+        optional_params
+    )
+
+
+def get_fdr_init_class_dict(
+        nickname_template_sector_tuples: list,
+        username: str = None,
+        optional_params: dict = None
+) -> str:
+    """
+    builds FDR dict we use to pass in required parameters Helios operates on command line
+    arguments so we are building string input here
+    :param nickname_template_sector_tuples:
+    :param username: str
+    :param optional_params: optional parameters for which we have default values in appian_fdr_config
+    :return: a dict in string format where each key and its data matches input sepc of FDRHandle class
+    """
+    str_tuples = nickname_template_sector_tuples.__str__()[1:-1]
+    str_tuples = str_tuples.replace("'","").replace(',(','|(')
+    res_string = (
+        f'{{"{_HELIOS_NICKNAME_TEMPLATE_SECTOR_TUPLE_KEY}":' +
+        f'"{str_tuples}"'
+    )
+    # if there are optional parameters append them
+    if optional_params is not None:
+        for key, val in optional_params.items():
+            res_string = res_string + (
+                f',"{key}":"{val}"'
+            )
+    res_string = res_string + f"}}"
+    return res_string
